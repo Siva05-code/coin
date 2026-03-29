@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CoinCoach App</title>
+<style>
+body { background:#0f0e0c; color:white; font-family:sans-serif; padding:20px;}
+.card { background:#1a1916; padding:15px; margin-top:15px; border-radius:10px;}
+.meta { color:#c8f04e; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<h2>CoinCoach Chat (Demo)</h2>
+<div id="env" class="meta">Loading configuration...</div>
+
+<button onclick="runDemo()">Run Demo</button>
+
+<div id="output"></div>
+
+<script>
+
+async function loadConfig() {
+  const envEl = document.getElementById("env");
+  try {
+    const response = await fetch("/api/config", { cache: "no-store" });
+    if (!response.ok) throw new Error("Config request failed");
+
+    const config = await response.json();
+    envEl.textContent = `${config.APP_NAME} | ${config.APP_ENV} | ${config.SUPPORT_EMAIL}`;
+  } catch (error) {
+    envEl.textContent = "CoinCoach | local mode";
+  }
+}
+
+function predictSavings(income, expenses) {
+  const total = Object.values(expenses).reduce((a, b) => a + b, 0);
+  return {
+    monthly: income - total,
+    yearly: (income - total) * 12
+  };
+}
+
+function generateAlerts(income, expenses) {
+  const alerts = [];
+  for (let [k,v] of Object.entries(expenses)) {
+    const p = (v/income)*100;
+    if (p > 30) alerts.push(k + " too high ("+p.toFixed(1)+"%)");
+    if (k === "Eating outside" && p > 10) alerts.push("Reduce eating outside");
+  }
+  return alerts;
+}
+
+function runDemo() {
+  const income = 50000;
+  const expenses = {
+    Rent: 20000,
+    Grocery: 6000,
+    "Eating outside": 7000,
+    Subscriptions: 2000
+  };
+
+  const pred = predictSavings(income, expenses);
+  const alerts = generateAlerts(income, expenses);
+  const alertHtml = alerts.length ? alerts.join("<br>") : "No alerts. Good spending hygiene.";
+
+  document.getElementById("output").innerHTML = `
+    <div class="card">
+      <h3>Prediction</h3>
+      Monthly: ₹${pred.monthly}<br>
+      Yearly: ₹${pred.yearly}
+    </div>
+
+    <div class="card">
+      <h3>Alerts</h3>
+      ${alertHtml}
+    </div>
+  `;
+}
+
+loadConfig();
+
+</script>
+
+</body>
+</html>
