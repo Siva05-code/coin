@@ -1,87 +1,681 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoinCoach App</title>
 <style>
-body { background:#0f0e0c; color:white; font-family:sans-serif; padding:20px;}
-.card { background:#1a1916; padding:15px; margin-top:15px; border-radius:10px;}
-.meta { color:#c8f04e; margin-top:8px; }
+  :root {
+    --bg-1: #0f130f;
+    --bg-2: #1c241f;
+    --panel: #101812;
+    --panel-alt: #161f18;
+    --text: #f2f4ec;
+    --muted: #a7b7a5;
+    --brand: #d4f659;
+    --warn: #ffbf44;
+    --danger: #ff5e5e;
+    --ok: #3bd481;
+    --border: #263226;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 12% 10%, #2b3c1f 0%, transparent 36%),
+      radial-gradient(circle at 80% 22%, #253126 0%, transparent 35%),
+      linear-gradient(140deg, var(--bg-1), var(--bg-2));
+    padding: 18px;
+  }
+
+  .shell {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 16px;
+  }
+
+  .panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%), var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .panel h2,
+  .panel h3 {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pad { padding: 14px; }
+
+  .brand {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .pill {
+    border: 1px solid #39503e;
+    color: var(--brand);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 99px;
+  }
+
+  .score {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  .gauge {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 18px;
+    background: conic-gradient(var(--ok) 0deg, var(--ok) 180deg, #2a332d 180deg 360deg);
+    color: #0e1410;
+  }
+
+  .kpi {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .kpi strong {
+    color: var(--text);
+    font-size: 16px;
+  }
+
+  .line {
+    height: 8px;
+    border-radius: 999px;
+    background: #252f27;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  .line > span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #7dff81, #d4f659, #ffbf44, #ff5e5e);
+    transition: width 0.3s ease;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .chip {
+    font-size: 12px;
+    color: #d3decf;
+    background: #1c271f;
+    border: 1px solid #314134;
+    border-radius: 999px;
+    padding: 5px 8px;
+  }
+
+  .toggle-list {
+    max-height: 210px;
+    overflow: auto;
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #2a382d;
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: var(--panel-alt);
+    font-size: 13px;
+  }
+
+  .item input { accent-color: #a5db3e; }
+
+  .split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .split-grid label {
+    font-size: 12px;
+    color: var(--muted);
+    display: block;
+  }
+
+  .split-grid input {
+    width: 100%;
+    margin-top: 4px;
+    border: 1px solid #314034;
+    background: #111914;
+    color: #ecf3e9;
+    border-radius: 8px;
+    padding: 6px;
+  }
+
+  .chat-wrap {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 78vh;
+  }
+
+  .topbar {
+    padding: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .meta {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .messages {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: auto;
+    max-height: calc(78vh - 130px);
+  }
+
+  .msg {
+    border: 1px solid #2a372c;
+    border-radius: 12px;
+    padding: 10px 12px;
+    max-width: 84%;
+    white-space: pre-wrap;
+    line-height: 1.45;
+  }
+
+  .me {
+    background: #232f20;
+    margin-left: auto;
+  }
+
+  .bot {
+    background: #151f17;
+    color: #e9f1e7;
+  }
+
+  .composer {
+    border-top: 1px solid var(--border);
+    padding: 12px;
+    position: relative;
+  }
+
+  .field {
+    width: 100%;
+    background: #111813;
+    color: var(--text);
+    border: 1px solid #334236;
+    border-radius: 12px;
+    padding: 12px;
+    min-height: 70px;
+    resize: vertical;
+    font-size: 14px;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    gap: 8px;
+  }
+
+  .btn {
+    border: 1px solid #425443;
+    background: #202b22;
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .btn.primary {
+    background: #c8f04e;
+    border-color: #c8f04e;
+    color: #0d1109;
+    font-weight: 700;
+  }
+
+  .rate {
+    flex: 1;
+  }
+
+  .rate small { color: var(--muted); }
+
+  .sugg {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 124px;
+    background: #101812;
+    border: 1px solid #334336;
+    border-radius: 10px;
+    max-height: 180px;
+    overflow: auto;
+    display: none;
+    z-index: 10;
+  }
+
+  .sugg button {
+    width: 100%;
+    text-align: left;
+    border: 0;
+    border-bottom: 1px solid #253127;
+    background: transparent;
+    color: #e5efe3;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+
+  .sugg button:hover {
+    background: #1b271d;
+  }
+
+  @media (max-width: 980px) {
+    .shell { grid-template-columns: 1fr; }
+    .messages { max-height: 50vh; }
+  }
 </style>
 </head>
 <body>
+<div class="shell">
+  <aside class="left">
+    <section class="panel pad">
+      <div class="brand">
+        <h2>CoinCoach</h2>
+        <span class="pill" id="apiState">Loading</span>
+      </div>
+      <div class="score">
+        <div class="gauge" id="scoreGauge">0</div>
+        <div class="kpi">
+          <div>Active Spend</div>
+          <strong id="activeSpend">Rs 0</strong>
+          <div id="savingsLine">Potential Monthly Save: Rs 0</div>
+        </div>
+      </div>
+      <div class="line"><span id="healthBar"></span></div>
+      <div class="chips" id="ruleBadges"></div>
+    </section>
 
-<h2>CoinCoach Chat (Demo)</h2>
-<div id="env" class="meta">Loading configuration...</div>
+    <section class="panel pad">
+      <h3>Expense Toggles</h3>
+      <div class="kpi">Turn off categories to simulate reduced spending.</div>
+      <div class="toggle-list" id="toggleList"></div>
+    </section>
 
-<button onclick="runDemo()">Run Demo</button>
+    <section class="panel pad">
+      <h3>Split Plan</h3>
+      <div class="kpi">Choose 50:30:20 or define your own split.</div>
+      <div class="chips">
+        <label class="chip"><input type="radio" name="splitMode" value="standard" checked> 50:30:20</label>
+        <label class="chip"><input type="radio" name="splitMode" value="custom"> Custom</label>
+      </div>
+      <div class="split-grid" id="customSplit">
+        <div><label>Needs %<input id="needsPct" type="number" min="0" max="100" value="50"></label></div>
+        <div><label>Wants %<input id="wantsPct" type="number" min="0" max="100" value="30"></label></div>
+        <div><label>Savings %<input id="savingsPct" type="number" min="0" max="100" value="20"></label></div>
+        <div><label>Total %<input id="totalPct" type="number" value="100" disabled></label></div>
+      </div>
+    </section>
+  </aside>
 
-<div id="output"></div>
+  <main class="panel chat-wrap">
+    <div class="topbar">
+      <h2>Budget Chat</h2>
+      <div class="meta" id="env">Loading configuration...</div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="composer">
+      <div class="sugg" id="suggestions"></div>
+      <textarea id="input" class="field" placeholder="Type budget info like: income: 60000"></textarea>
+      <div class="actions">
+        <button class="btn" id="insertTemplate">Insert Template</button>
+        <div class="rate">
+          <small id="rateText">0 / 30 calls used</small>
+          <div class="line"><span id="rateBar"></span></div>
+        </div>
+        <button class="btn primary" id="send">Ask Coach</button>
+      </div>
+    </div>
+  </main>
+</div>
 
 <script>
+const SUGGEST_FIELDS = [
+  "income:",
+  "rent:",
+  "electricity bill:",
+  "water bill:",
+  "recharge bill:",
+  "medical allowance:",
+  "eating outside:",
+  "subscriptions:",
+  "grocery:",
+  "needy shopping:",
+  "unexpected allowance:",
+  "travelling:",
+  "saving:",
+  "emi:",
+  "children allowance:"
+];
+
+const RULES = [
+  "Pay yourself first",
+  "Use 1% weekly cut",
+  "Build 6-month emergency fund",
+  "Cap eating outside at 10%",
+  "Review subscriptions monthly",
+  "Automate savings transfer"
+];
+
+const state = {
+  config: null,
+  income: 0,
+  expenses: {},
+  enabled: {},
+  callsUsed: Number(localStorage.getItem("coincoach_calls") || 0)
+};
+
+const els = {
+  env: document.getElementById("env"),
+  apiState: document.getElementById("apiState"),
+  messages: document.getElementById("messages"),
+  input: document.getElementById("input"),
+  send: document.getElementById("send"),
+  suggestions: document.getElementById("suggestions"),
+  toggleList: document.getElementById("toggleList"),
+  activeSpend: document.getElementById("activeSpend"),
+  savingsLine: document.getElementById("savingsLine"),
+  scoreGauge: document.getElementById("scoreGauge"),
+  healthBar: document.getElementById("healthBar"),
+  rateText: document.getElementById("rateText"),
+  rateBar: document.getElementById("rateBar"),
+  ruleBadges: document.getElementById("ruleBadges"),
+  insertTemplate: document.getElementById("insertTemplate"),
+  needsPct: document.getElementById("needsPct"),
+  wantsPct: document.getElementById("wantsPct"),
+  savingsPct: document.getElementById("savingsPct"),
+  totalPct: document.getElementById("totalPct"),
+  splitMode: document.querySelectorAll("input[name='splitMode']")
+};
+
+function rs(v) {
+  return `Rs ${Math.max(0, Math.round(v)).toLocaleString("en-IN")}`;
+}
+
+function addMsg(role, text) {
+  const div = document.createElement("div");
+  div.className = `msg ${role === "user" ? "me" : "bot"}`;
+  div.textContent = text;
+  els.messages.appendChild(div);
+  els.messages.scrollTop = els.messages.scrollHeight;
+}
+
+function normalizeKey(raw) {
+  return raw.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function parseBudget(text) {
+  const lines = text.split(/\n+/).map(v => v.trim()).filter(Boolean);
+  lines.forEach((line) => {
+    const m = line.match(/^([a-zA-Z\s]+):\s*(\d+(?:\.\d+)?)$/);
+    if (!m) return;
+    const key = normalizeKey(m[1]);
+    const val = Number(m[2]);
+    if (Number.isNaN(val)) return;
+    if (key === "income") {
+      state.income = val;
+      return;
+    }
+    state.expenses[key] = val;
+    if (state.enabled[key] === undefined) state.enabled[key] = true;
+  });
+}
+
+function getActiveSpend() {
+  return Object.entries(state.expenses)
+    .filter(([k]) => state.enabled[k])
+    .reduce((sum, [, v]) => sum + v, 0);
+}
+
+function splitPercentages() {
+  const mode = [...els.splitMode].find(r => r.checked)?.value || "standard";
+  if (mode === "standard") return { needs: 50, wants: 30, savings: 20 };
+  const needs = Number(els.needsPct.value) || 0;
+  const wants = Number(els.wantsPct.value) || 0;
+  const savings = Number(els.savingsPct.value) || 0;
+  return { needs, wants, savings };
+}
+
+function renderRules() {
+  els.ruleBadges.innerHTML = RULES.map((r) => `<span class="chip">${r}</span>`).join("");
+}
+
+function renderToggles() {
+  const entries = Object.entries(state.expenses);
+  if (!entries.length) {
+    els.toggleList.innerHTML = '<div class="kpi">Add expense lines in chat to populate toggles.</div>';
+    return;
+  }
+  els.toggleList.innerHTML = entries.map(([k, v]) => `
+    <label class="item">
+      <span>${k} - ${rs(v)}</span>
+      <input data-key="${k}" type="checkbox" ${state.enabled[k] ? "checked" : ""}>
+    </label>
+  `).join("");
+
+  els.toggleList.querySelectorAll("input[type='checkbox']").forEach((cb) => {
+    cb.addEventListener("change", (e) => {
+      const key = e.target.getAttribute("data-key");
+      state.enabled[key] = e.target.checked;
+      renderSummary();
+    });
+  });
+}
+
+function renderSummary() {
+  const activeSpend = getActiveSpend();
+  const income = state.income;
+  const monthlySave = income - activeSpend;
+  const health = income > 0 ? Math.max(0, Math.min(100, Math.round((monthlySave / income) * 100))) : 0;
+
+  els.activeSpend.textContent = rs(activeSpend);
+  els.savingsLine.textContent = `Potential Monthly Save: ${rs(monthlySave)}`;
+  els.scoreGauge.textContent = String(health);
+  els.healthBar.style.width = `${health}%`;
+  els.scoreGauge.style.background = `conic-gradient(var(--ok) 0deg, var(--ok) ${health * 3.6}deg, #2a332d ${health * 3.6}deg 360deg)`;
+
+  const split = splitPercentages();
+  const total = split.needs + split.wants + split.savings;
+  els.totalPct.value = String(total);
+}
+
+function renderRate() {
+  const pct = Math.min(100, (state.callsUsed / 30) * 100);
+  els.rateText.textContent = `${state.callsUsed} / 30 calls used`;
+  els.rateBar.style.width = `${pct}%`;
+}
+
+function suggestionList(query) {
+  const q = query.toLowerCase();
+  return SUGGEST_FIELDS.filter((f) => f.includes(q)).slice(0, 12);
+}
+
+function showSuggestions() {
+  const current = els.input.value.split(/\n/).pop().trim().toLowerCase();
+  const list = suggestionList(current);
+  if (!list.length) {
+    els.suggestions.style.display = "none";
+    return;
+  }
+  els.suggestions.innerHTML = list.map((item) => `<button type="button" data-value="${item}">${item}</button>`).join("");
+  els.suggestions.style.display = "block";
+}
+
+function insertSuggestion(value) {
+  const parts = els.input.value.split(/\n/);
+  parts[parts.length - 1] = value + " ";
+  els.input.value = parts.join("\n");
+  els.suggestions.style.display = "none";
+  els.input.focus();
+}
 
 async function loadConfig() {
-  const envEl = document.getElementById("env");
   try {
     const response = await fetch("/api/config", { cache: "no-store" });
     if (!response.ok) throw new Error("Config request failed");
-
     const config = await response.json();
+    state.config = config;
+
     const keyStatus = config.HAS_API_KEY ? "API key configured" : "API key missing";
-    envEl.textContent = `${config.APP_NAME} | ${config.APP_ENV} | ${config.SUPPORT_EMAIL} | ${keyStatus}`;
+    els.apiState.textContent = keyStatus;
+    els.env.textContent = `${config.APP_NAME} | ${config.APP_ENV} | ${config.SUPPORT_EMAIL}`;
   } catch (error) {
-    envEl.textContent = "CoinCoach | local mode";
+    els.apiState.textContent = "Config unavailable";
+    els.env.textContent = "CoinCoach | local mode";
   }
 }
 
-function predictSavings(income, expenses) {
-  const total = Object.values(expenses).reduce((a, b) => a + b, 0);
+function buildCoachContext() {
+  const split = splitPercentages();
+  const activeSpend = getActiveSpend();
+  const categories = Object.entries(state.expenses).map(([k, v]) => `${k}: ${v} (${state.enabled[k] ? "on" : "off"})`);
   return {
-    monthly: income - total,
-    yearly: (income - total) * 12
+    income: state.income,
+    activeSpend,
+    savings: state.income - activeSpend,
+    split,
+    categories,
+    rules: RULES
   };
 }
 
-function generateAlerts(income, expenses) {
-  const alerts = [];
-  for (let [k,v] of Object.entries(expenses)) {
-    const p = (v/income)*100;
-    if (p > 30) alerts.push(k + " too high ("+p.toFixed(1)+"%)");
-    if (k === "Eating outside" && p > 10) alerts.push("Reduce eating outside");
+async function askCoach() {
+  const text = els.input.value.trim();
+  if (!text) return;
+
+  if (state.callsUsed >= 30) {
+    addMsg("assistant", "- Rate limit reached\n- 30 calls used\n- Refresh tomorrow or reset local counter");
+    return;
   }
-  return alerts;
-}
 
-function runDemo() {
-  const income = 50000;
-  const expenses = {
-    Rent: 20000,
-    Grocery: 6000,
-    "Eating outside": 7000,
-    Subscriptions: 2000
+  addMsg("user", text);
+  parseBudget(text);
+  renderToggles();
+  renderSummary();
+  els.input.value = "";
+  els.suggestions.style.display = "none";
+
+  const payload = {
+    message: text,
+    context: buildCoachContext()
   };
 
-  const pred = predictSavings(income, expenses);
-  const alerts = generateAlerts(income, expenses);
-  const alertHtml = alerts.length ? alerts.join("<br>") : "No alerts. Good spending hygiene.";
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-  document.getElementById("output").innerHTML = `
-    <div class="card">
-      <h3>Prediction</h3>
-      Monthly: ₹${pred.monthly}<br>
-      Yearly: ₹${pred.yearly}
-    </div>
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Chat failed");
 
-    <div class="card">
-      <h3>Alerts</h3>
-      ${alertHtml}
-    </div>
-  `;
+    state.callsUsed += 1;
+    localStorage.setItem("coincoach_calls", String(state.callsUsed));
+    renderRate();
+
+    addMsg("assistant", data.reply || "- No response\n- Try again");
+  } catch (err) {
+    addMsg("assistant", `- Error: ${err.message}\n- Check API key setup in Vercel\n- Retry request`);
+  }
 }
 
+els.send.addEventListener("click", askCoach);
+els.input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    askCoach();
+  }
+});
+els.input.addEventListener("focus", showSuggestions);
+els.input.addEventListener("input", showSuggestions);
+document.addEventListener("click", (e) => {
+  if (!els.suggestions.contains(e.target) && e.target !== els.input) {
+    els.suggestions.style.display = "none";
+  }
+});
+els.suggestions.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (btn) insertSuggestion(btn.getAttribute("data-value"));
+});
+els.insertTemplate.addEventListener("click", () => {
+  els.input.value = [
+    "income: 60000",
+    "rent: 18000",
+    "electricity bill: 2000",
+    "water bill: 500",
+    "recharge bill: 700",
+    "medical allowance: 1500",
+    "eating outside: 4000",
+    "subscriptions: 800",
+    "grocery: 6000",
+    "travelling: 2500",
+    "emi: 7000"
+  ].join("\n");
+  showSuggestions();
+});
+
+els.splitMode.forEach((radio) => radio.addEventListener("change", renderSummary));
+[els.needsPct, els.wantsPct, els.savingsPct].forEach((input) => {
+  input.addEventListener("input", renderSummary);
+});
+
+renderRules();
+renderToggles();
+renderSummary();
+renderRate();
 loadConfig();
-
+addMsg("assistant", "- Share your income and expenses in key:value format\n- I will answer in bullet points only\n- You can use 50:30:20 or custom split\n- Toggle expenses to test savings impact");
 </script>
-
 </body>
 </html>

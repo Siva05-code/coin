@@ -2,7 +2,7 @@
 
 This project is now configured for Vercel deployment with:
 - static pages (`index.html`, `app.html`)
-- serverless API routes (`/api/health`, `/api/config`)
+- serverless API routes (`/api/health`, `/api/config`, `/api/chat`)
 - production headers via `vercel.json`
 - environment variable template via `.env.example`
 
@@ -21,6 +21,8 @@ Values used by `/api/config`:
 
 Server-only secret (never expose in frontend):
 - `API_KEY`
+- `GROQ_MODEL` (optional)
+- `GROQ_API_URL` (optional)
 
 Do not commit real `.env*` files. `.gitignore` already excludes them.
 
@@ -52,3 +54,4 @@ Then open:
 - Demo page loads from `/app`
 - API health endpoint returns `{ ok: true }`
 - Runtime config appears on the app page header line
+- Chat works through `/api/chat` using server-side API key (no hardcoded key in UI)
