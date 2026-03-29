@@ -27,7 +27,8 @@ async function loadConfig() {
     if (!response.ok) throw new Error("Config request failed");
 
     const config = await response.json();
-    envEl.textContent = `${config.APP_NAME} | ${config.APP_ENV} | ${config.SUPPORT_EMAIL}`;
+    const keyStatus = config.HAS_API_KEY ? "API key configured" : "API key missing";
+    envEl.textContent = `${config.APP_NAME} | ${config.APP_ENV} | ${config.SUPPORT_EMAIL} | ${keyStatus}`;
   } catch (error) {
     envEl.textContent = "CoinCoach | local mode";
   }

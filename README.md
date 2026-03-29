@@ -19,6 +19,9 @@ Values used by `/api/config`:
 - `APP_ENV`
 - `SUPPORT_EMAIL`
 
+Server-only secret (never expose in frontend):
+- `API_KEY`
+
 Do not commit real `.env*` files. `.gitignore` already excludes them.
 
 ## 2) Deploy to Vercel
@@ -29,6 +32,7 @@ Do not commit real `.env*` files. `.gitignore` already excludes them.
    - `APP_NAME`
    - `APP_ENV`
    - `SUPPORT_EMAIL`
+   - `API_KEY`
 4. Deploy.
 
 ## 3) Local Vercel Run (optional)
